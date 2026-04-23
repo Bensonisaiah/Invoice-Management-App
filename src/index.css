@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+/* @tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer base {
+  :root {
+    /* Light mode colors (default) */
+    --background: 248 248 251;   /* #F8F8FB */
+    --text-primary: 12 14 22;    /* #0C0E16 */
+    --side-bar: #373B53; /* #373B53 */
+    --text-secondary: 136 142 176; /* #888EB0 */
+    --primary: 124 93 250;       /* #7C5DFA */
+    --primary-light: 146 119 255; /* #9277FF */
+    --danger: 236 87 87;         /* #EC5757 */
+    --danger-light: 255 151 151; /* #FF9797 */
+    --card-bg: #FFFFFF;         /* #FFFFFF */
+    --border-light: 223 227 250; /* #DFE3FA */
+  }
+
+  .dark {
+    --background: 20 22 37;      /* #141625 */
+    --text-primary: 255 255 255;
+    --side-bar: #1E2139; /* #1E2139 */
+    --text-secondary: 223 227 250; /* #DFE3FA */
+    --primary: 124 93 250;
+    --primary-light: 146 119 255;
+    --danger: 236 87 87;
+    --danger-light: 255 151 151;
+    --card-bg: #1E2139;         /* #1E2139 */
+    --border-light: 37 41 69;    /* #252945 */
+  }
+
+  body {
+    @apply font-sans font-medium;
+    background: rgb(var(--background));
+    color: rgb(var(--text-primary));
+  }
+
+  h1 {
+    @apply text-[36px] leading-[33px] tracking-[-1px] font-bold;
+  }
+
+  h2 {
+    @apply text-2xl leading-[22px] tracking-[-0.75px] font-bold;
+  }
+
+  h3 {
+    @apply text-[15px] leading-6 tracking-[-0.25px] font-bold;
+  }
+
+  h4 {
+    @apply text-[15px] leading-[15px] tracking-[-0.25px] font-bold;
+  }
+
+  body, p, li, input, select, textarea, button {
+    @apply text-[13px] leading-[18px] tracking-[-0.1px];
+  }
+}
+

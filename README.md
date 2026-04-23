@@ -4,7 +4,7 @@ A full‑stack responsive invoice application built with **React + TypeScript + 
 It allows users to create, read, update, delete, and filter invoices, save drafts, mark invoices as paid, and toggle between light/dark themes. All data is persisted via localStorage.
 
 **Live Demo:**  
-[Live Demo URL](#) 🚧 _Coming soon – will be updated after deployment._
+https://invoice-management-app-flax.vercel.app/
 
 **Repository:**  
 [https://github.com/Bensonisaiah/Invoice-Management-App](https://github.com/Bensonisaiah/Invoice-Management-App)

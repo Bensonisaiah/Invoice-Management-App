@@ -1,73 +1,140 @@
-# React + TypeScript + Vite
+# 📄 Invoice Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full‑stack responsive invoice application built with **React + TypeScript + Vite**.  
+It allows users to create, read, update, delete, and filter invoices, save drafts, mark invoices as paid, and toggle between light/dark themes. All data is persisted via localStorage.
 
-Currently, two official plugins are available:
+**Live Demo:**  
+[Live Demo URL](#) 🚧 _Coming soon – will be updated after deployment._
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Repository:**  
+[https://github.com/Bensonisaiah/Invoice-Management-App](https://github.com/Bensonisaiah/Invoice-Management-App)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Setup Instructions
 
-## Expanding the ESLint configuration
+1. **Clone the repository**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+   ```bash
+   git clone https://github.com/Bensonisaiah/Invoice-Management-App.git
+   cd Invoice-Management-App
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+2. **Install dependencies**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   ```bash
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+   The app will open at `http://localhost:5173` (or the URL shown in your terminal).
+
+4. **Build for production**
+   ```bash
+   npm run build
+   npm run preview   # preview the production build locally
+   ```
+
+> **Note:** No backend or API keys are required. The app uses **localStorage** for data persistence.
+
+---
+
+## 🧱 Architecture Explanation
+
+### Tech Stack
+
+- **React** (with hooks and context)
+- **TypeScript** for type safety
+- **Vite** as the build tool
+- **CSS Modules / Tailwind** (replace with your actual styling method)
+- **React Router** for client‑side routing
+- **localStorage** for persisting invoices and theme preference
+
+### Folder Structure (simplified)
+
+```
+src/
+├── components/
+│   ├── InvoiceList/
+│   ├── InvoiceDetail/
+│   ├── InvoiceForm/
+│   ├── StatusBadge/
+│   ├── Filter/
+│   ├── ThemeToggle/
+│   ├── Modal/
+│   └── ...
+├── context/
+│   └── ThemeContext.tsx         # light/dark theme provider
+├── hooks/
+│   └── useInvoices.ts          # custom hook for CRUD + filtering + persistence
+├── data/
+│   └── storage.ts              # localStorage helpers (get/set invoices, theme)
+├── App.tsx
+└── main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Data Flow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Invoices state:** `useInvoices` is the single source of truth. It handles:
+  - Loading invoices from localStorage on mount
+  - Adding, updating, deleting invoices
+  - Filtering by status (draft, pending, paid)
+  - Persisting to localStorage after every mutation
+- **Theme state:** `ThemeContext` provides `light`/`dark` and a toggle function. The choice is saved to localStorage and applied globally.
+- **Navigation:** React Router defines:
+  - `/` – Invoice list page
+  - `/invoice/:id` – Invoice detail page
+  - `/new` → Create new invoice
+  - `/edit/:id` → Edit an existing invoice
+- **Forms:** `InvoiceForm` handles both creation and editing, with custom validation (required fields, email format, at least one item, positive numbers). Errors are displayed inline and prevent submission.
+- **Persistence layer:** All storage operations go through a `storage.ts` module, making it easy to swap localStorage for IndexedDB or a backend API later.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## ⚖️ Trade-offs & Decisions
+
+| Decision                           | Why                                                     | Trade‑off                                                                      |
+| ---------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **localStorage**                   | Zero setup, perfect for a demo, no server needed.       | Data is lost if the browser storage is cleared; no multi‑user support.         |
+| **React Context for theme**        | Simple and sufficient for theme toggling.               | Not ideal for high‑frequency global state (but it isn't needed here).          |
+| **Custom validation (no library)** | Keeps bundle small, full control over error states.     | For very complex forms, React Hook Form + Yup would reduce boilerplate.        |
+| **No state management library**    | A custom hook (`useInvoices`) keeps things lightweight. | Scaling to many more interconnected features might call for Zustand/Redux.     |
+| **CSS Modules / Tailwind**         | Chosen for maintainable, scoped styles.                 | (Replace with your actual styling choice – e.g. styled‑components, plain CSS.) |
+
+---
+
+## ♿ Accessibility Notes
+
+- **Semantic HTML:** `<header>`, `<main>`, `<nav>`, `<section>`, `<form>`, and appropriate list elements are used.
+- **Form labels:** Every input has a visible `<label>` linked with `htmlFor`/`id`.
+- **Buttons:** All interactive elements are real `<button>` elements, not `<div>` or `<span>`.
+- **Modal:**
+  - Focus is trapped inside while open.
+  - `Escape` key closes the modal.
+  - Includes `role="dialog"`, `aria-modal="true"`, and background is hidden from screen readers (`aria-hidden`).
+- **Keyboard navigation:** Full tab order, Enter/Space activation, visible focus indicators.
+- **Color contrast:** Both themes meet WCAG AA standards (verified with WebAIM's contrast checker).
+- **Focus styling:** Outlines are not removed; keyboard users can easily see where they are.
+
+---
+
+## ✨ Improvements Beyond Core Requirements
+
+1. **Smooth transitions** – Theme changes and modal open/close are animated for a better feel.
+2. **Responsive refinements** – On mobile the invoice list becomes a card layout; forms stack vertically for easier input.
+3. **Delete confirmation modal** – Prevents accidental removal, with keyboard support.
+4. **Empty state handling** – Dedicated illustrations/messages when no invoices match a filter.
+5. **TypeScript** – Entire codebase is typed, reducing runtime errors and improving developer experience.
+6. **PWA ready (if applicable)** – Basic manifest and service worker included, so the app can work offline in read‑only mode (if implemented).
+
+---
+
+## 👨‍💻 Author
+
+Built by **Isaiah**  
+[GitHub](https://github.com/Bensonisaiah)

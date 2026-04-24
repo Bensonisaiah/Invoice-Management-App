@@ -1,12 +1,19 @@
 import { Icon } from "@iconify/react";
 import StatusBadge from "../../component/common/StatusBadge";
+import { Link } from "react-router-dom";
 
 
 type InvoiceStatus = "paid" | "pending" | "draft";
 
-const InvoiceList = ({ status }: { status: InvoiceStatus }) => {
+interface InvoiceListProps {
+  status: InvoiceStatus;
+  id: string;                // added id prop
+  // other props like dueDate, clientName, amount could be added later
+}
+
+const InvoiceList = ({ id, status }:  InvoiceListProps ) => {
   return (
-    <div className="w-full rounded-lg bg-[var(--card-bg)] grid grid-cols-[repeat(24,minmax(0,1fr))] gap-2 items-center justify-between shadow-[0px_10px_10px_-10px_#48549F1A] py-[15px] px-4">
+    <Link to={`/detail/:${id}`} className="w-full rounded-lg bg-[var(--card-bg)] grid grid-cols-[repeat(24,minmax(0,1fr))] gap-2 items-center justify-between shadow-[0px_10px_10px_-10px_#48549F1A] py-[15px] px-4">
 
         <div className="col-span-4 font-bold text-[15px] leading-[15px] tracking-[-0.24px] text-[#7E88C3]">#<span className="text-text-primary">AA1449</span></div>
         <div className="col-span-5 font-medium text-[13px] leading-[15px] tracking-[-0.1px] text-text-secondary">Due  14 Oct 2021</div>
@@ -21,7 +28,7 @@ const InvoiceList = ({ status }: { status: InvoiceStatus }) => {
         
 
 
-    </div>
+    </Link>
   );
 };
 

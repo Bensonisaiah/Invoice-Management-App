@@ -4,12 +4,12 @@ import Nav from "./Nav";
 
 const InvoiceListPage = () => {
   return (
-    <div className="pt-[77px] px-12 lg:px-24 border-2 w-full">
+    <div className="pt-[77px] px-12 lg:px-24 w-full">
       <Nav />
       <div className="flex flex-col gap-4">
-        <InvoiceList status="paid" /> 
-        <InvoiceList status="pending" />
-        <InvoiceList status="draft" />
+        <InvoiceList id="1" status="paid" /> 
+        <InvoiceList id="2" status="pending" />
+        <InvoiceList id="3" status="draft" />
       </div>
       
     </div>

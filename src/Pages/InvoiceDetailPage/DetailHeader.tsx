@@ -1,3 +1,6 @@
+import DeleteBtn from "../../component/common/Buttons/DeleteBtn";
+import EditBtn from "../../component/common/Buttons/EditBtn";
+import MarkAsPaidBtn from "../../component/common/Buttons/MarkAsPaidBtn";
 import StatusBadge from "../../component/common/StatusBadge";
 
 
@@ -10,9 +13,9 @@ const DetailHeader = () => {
       </div>
 
       <div className="flex gap-4">
-        <div>.</div>
-        <div>.</div>
-        <div>.</div>
+        <EditBtn />
+        <DeleteBtn />
+        <MarkAsPaidBtn />
       </div>
     </div>
   );

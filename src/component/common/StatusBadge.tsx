@@ -16,7 +16,7 @@ const STATUS_STYLES: Record<StatusType, {
   draft: {
     dot: 'bg-[#373B53]',
     bg: 'bg-[#373B530F]',
-    text: 'text-[#373B53]',
+    text: 'text-text-secondary',
   },
   pending: {
     dot: 'bg-[#FF8F00]',

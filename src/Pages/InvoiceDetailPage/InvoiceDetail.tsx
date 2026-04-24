@@ -78,7 +78,7 @@ const InvoiceDetail = () => {
           <LineItem name="Landing Page" quantity={3} unitPrice={450.00} />
 
           <LineItem name="Logo Redesign" quantity={1} unitPrice={320.00} />
-          
+
           <LineItem name="Social Media Kit" quantity={5} unitPrice={80.00} />
 
 
@@ -91,7 +91,10 @@ const InvoiceDetail = () => {
           
         </div>
 
-        <div>.</div>
+        <div className="text-[#FFFFFF] bg-[#373B53] dark:bg-[#0C0E16] rounded-b-lg flex justify-between items-center p-8">
+          <div className="font-medium text-[13px] leading-[18px] tracking-[-0.1px]">Amount Due</div>
+          <div className="font-bold text-2xl leading-8 tracking-[-0.5px]">£ 556.00</div>
+        </div>
       </div>
     </div>
   );

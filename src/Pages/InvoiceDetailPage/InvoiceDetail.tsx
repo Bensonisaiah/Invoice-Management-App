@@ -1,3 +1,5 @@
+import LineItem from "./LineItem";
+
 interface InvoiceInfoItemProps {
   label: string;
   value: string;
@@ -21,7 +23,7 @@ const InvoiceInfoItem: React.FC<InvoiceInfoItemProps> = ({ label, value }) => {
 
 const InvoiceDetail = () => {
   return (
-    <div className="h-screen flex flex-col p-12 bg-[var(--card-bg)] rounded-lg shadow-[0px_10px_10_-10px_#48549F1A]">
+    <div className="flex flex-col p-12 bg-[var(--card-bg)] rounded-lg shadow-[0px_10px_10_-10px_#48549F1A]">
       <div className="w-full mb-5 flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <div className="font-bold text-[15px] leading-6 tracking-[-0.35px] text-[#888EB0]"># <span className="text-text-primary">XM9141</span> </div>
@@ -59,15 +61,37 @@ const InvoiceDetail = () => {
       </div>
 
 
-      <div className="w-full border-2">
-        <div className="rounded-t-lg bg-[#F9FAFE] dark:bg-[#252945]">
-          <div>.</div>
-          <div>.</div>
-          <div>.</div>
-          <div>.</div>
+      <div className="w-full h-96">
+        <div className="flex flex-col p-8 gap-8 rounded-t-lg bg-[#F9FAFE] dark:bg-[#252945]">
+
+          <div className="grid grid-cols-12 text-[#7E88C3] dark:text-[#DFE3FA]">
+            <div className="col-span-6">Item Name</div>
+            <div className="col-span-2">QTY.</div>
+            <div className="col-span-2">Price</div>
+            <div className="col-span-2">Total</div>
+          </div>
+
+          <LineItem name="Banner Design" quantity={1} unitPrice={156.00} />
+
+          <LineItem name="Email Design" quantity={2} unitPrice={200.00} />
+
+          <LineItem name="Landing Page" quantity={3} unitPrice={450.00} />
+
+          <LineItem name="Logo Redesign" quantity={1} unitPrice={320.00} />
+          
+          <LineItem name="Social Media Kit" quantity={5} unitPrice={80.00} />
+
+
+
+          
+
+
+
+
+          
         </div>
 
-        <div></div>
+        <div>.</div>
       </div>
     </div>
   );

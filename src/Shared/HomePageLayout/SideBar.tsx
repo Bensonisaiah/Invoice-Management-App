@@ -3,7 +3,7 @@ import { ThemeToggle } from "../../component/common/ThemeToggle/ThemeToggle";
 
 const SideBar = () => {
   return (
-    <div className="h-20 lg:h-full w-full lg:w-[103px] lg:rounded-r-[20px] bg-[--side-bar] flex flex-row lg:flex-col items-center justify-between">
+    <div className="fixed top-0 left-0 z-50 lg:top-0 lg:left-0 h-20 lg:h-full w-full lg:w-[103px] lg:rounded-r-[20px] bg-[--side-bar] flex flex-row lg:flex-col items-center justify-between">
       <div className="h-full lg:h-fit lg:w-full"><img className="w-full h-full" src="/iconmain.svg" alt="icon" /></div>
 
       <div className="flex w-fit flex-row lg:flex-col gap-4 lg:w-full">

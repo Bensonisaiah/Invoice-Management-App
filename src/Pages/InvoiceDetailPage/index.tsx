@@ -4,7 +4,7 @@ import InvoiceDetail from "./InvoiceDetail";
 
 const InvoiceDetailPage = () => {
   return (
-    <div className="pt-16 px-60 w-full">
+    <div className="pt-32 px-10 lg:pt-16 lg:px-56 w-full">
       <div className="flex flex-col w-full gap-6">
 
         <div className="flex justify-between items-center w-[78px]">

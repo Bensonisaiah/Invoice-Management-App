@@ -3,6 +3,7 @@ import InvoiceList from "./InvoiceList";
 import Nav from "./Nav";
 import CreateInvoiceModal from "../../component/Modals/CreateInvoiceModal";
 import { useInvoice } from "../../context/InvoiceContext";
+import type { InvoiceStatus } from "../../Types/invoice";
 
 
 const InvoiceListPage = () => {
@@ -21,7 +22,12 @@ const InvoiceListPage = () => {
   return (
     <>
     <div className="pt-[141px] lg:pt-[77px] px-12 lg:px-52 xl:px-[355px] w-full">
-      <Nav onNewInvoice={() => setIsCreateOpen(true)} />
+      <Nav 
+        onNewInvoice={() => setIsCreateOpen(true)}
+        value={statusFilter === 'all' ? null : statusFilter}
+        onChange={(val) => setStatusFilter(val ? (val as InvoiceStatus) : 'all')}
+        invoiceCount={filteredInvoices.length} 
+      />
       <div className="flex flex-col gap-4">
         {filteredInvoices.map(invoice => (
           <InvoiceList key={invoice.id} invoice={invoice} /> 

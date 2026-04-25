@@ -2,7 +2,11 @@ import FilterByStatus from "../../component/common/FilterByStatus";
 import NewInvoiceBtn from "../../component/common/Buttons/NewInvoiceBtn";
 
 
-const Nav = () => {
+interface NavProps {
+  onNewInvoice: () => void;
+}
+
+const Nav: React.FC<NavProps> = ({ onNewInvoice }) => {
   return (
     <div className="flex items-center justify-between mb-8 w-full">
       <div>
@@ -16,7 +20,7 @@ const Nav = () => {
           <FilterByStatus />
         </div>
 
-        <NewInvoiceBtn />
+        <div onClick={onNewInvoice}><NewInvoiceBtn /></div>
       </div>
       
     </div>

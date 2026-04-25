@@ -1,3 +1,4 @@
+import type { Invoice } from "../../Types/invoice";
 import LineItem from "./LineItem";
 
 interface InvoiceInfoItemProps {
@@ -21,42 +22,50 @@ const InvoiceInfoItem: React.FC<InvoiceInfoItemProps> = ({ label, value }) => {
 
 
 
-const InvoiceDetail = () => {
+const InvoiceDetail: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
+  const total = invoice.items.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
+
+
+
+
   return (
     <div className="flex flex-col p-12 bg-[var(--card-bg)] rounded-lg shadow-[0px_10px_10_-10px_#48549F1A]">
       <div className="w-full mb-5 flex items-center justify-between">
         <div className="flex flex-col gap-2">
-          <div className="font-bold text-[15px] leading-6 tracking-[-0.35px] text-[#888EB0]"># <span className="text-text-primary">XM9141</span> </div>
-          <div className="font-medium text-[13px] leading-[15px] tracking-[-0.1px] text-text-secondary">Graphic Design</div>
+          <div className="font-bold text-[15px] leading-6 tracking-[-0.35px] text-[#888EB0]"># <span className="text-text-primary">{invoice.id}</span> </div>
+          <div className="font-medium text-[13px] leading-[15px] tracking-[-0.1px] text-text-secondary">{invoice.description}</div>
         </div>
 
         <div className="flex flex-col justify-end items-end font-medium text-[13px] leading-[18px] tracking-[-0.1px] text-left text-text-secondary">
-          <p>19 Union Terrace</p>
-          <p>London</p>
-          <p>E1 3EZ</p>
-          <p>United Kingdom</p>
+          <p>{invoice.senderAddress.street}</p>
+          <p>{invoice.senderAddress.city}</p>
+          <p>{invoice.senderAddress.postCode}</p>
+          <p>{invoice.senderAddress.country}</p>
         </div>
       </div>
 
       <div className="w-full mb-11 flex gap-[119px]">
         <div className="flex flex-col gap-8">
-          <InvoiceInfoItem label="Invoice Date" value="21 Aug 2021" />
-          <InvoiceInfoItem label="Payment Due" value="20 Sep 2021" />
+          <InvoiceInfoItem label="Invoice Date" value={invoice.createdAt} />
+          <InvoiceInfoItem label="Payment Due" value={invoice.paymentDue} />
         </div>
 
         <div className="h-full flex flex-col gap-2">
           <div className="font-medium text-[13px] leading-[15px] tracking-[-0.1px] text-text-secondary">Bill To</div>
-          <div className="font-bold text-[15px] leading-5 tracking-[-0.25px] text-text-primary">Alex Grim</div>
+          <div className="font-bold text-[15px] leading-5 tracking-[-0.25px] text-text-primary">{invoice.clientName}</div>
           <div className="font-medium text-[13px] leading-[18px] tracking-[-0.1px] text-text-secondary">
-            <div>84 Church Way</div>
-            <div>Bradford</div>
-            <div>BD1 9PB</div>
-            <div>United Kingdom</div>
+            <div>{invoice.clientAddress.street}</div>
+            <div>{invoice.clientAddress.city}</div>
+            <div>{invoice.clientAddress.postCode}</div>
+            <div>{invoice.clientAddress.country}</div>
           </div>
         </div>
         <div className="flex h-full flex-col gap-2">
           <div className="font-medium text-[13px] leading-[15px] tracking-[-0.1px] text-text-secondary">Sent to</div>
-          <div className="font-bold text-[15px] leading-5 tracking-[-0.25px] text-text-primary">alexgrim@mail.com</div>
+          <div className="font-bold text-[15px] leading-5 tracking-[-0.25px] text-text-primary">{invoice.clientEmail}</div>
         </div>
       </div>
 
@@ -71,15 +80,14 @@ const InvoiceDetail = () => {
             <div className="col-span-2">Total</div>
           </div>
 
-          <LineItem name="Banner Design" quantity={1} unitPrice={156.00} />
-
-          <LineItem name="Email Design" quantity={2} unitPrice={200.00} />
-
-          <LineItem name="Landing Page" quantity={3} unitPrice={450.00} />
-
-          <LineItem name="Logo Redesign" quantity={1} unitPrice={320.00} />
-
-          <LineItem name="Social Media Kit" quantity={5} unitPrice={80.00} />
+          {invoice.items.map((item) => (
+            <LineItem
+              key={item.id}
+              name={item.name}
+              quantity={item.quantity}
+              unitPrice={item.price}
+            />
+          ))}
 
 
 
@@ -93,7 +101,7 @@ const InvoiceDetail = () => {
 
         <div className="text-[#FFFFFF] bg-[#373B53] dark:bg-[#0C0E16] rounded-b-lg flex justify-between items-center p-8">
           <div className="font-medium text-[13px] leading-[18px] tracking-[-0.1px]">Amount Due</div>
-          <div className="font-bold text-2xl leading-8 tracking-[-0.5px]">£ 556.00</div>
+          <div className="font-bold text-2xl leading-8 tracking-[-0.5px]">£ {total.toFixed(2)}</div>
         </div>
       </div>
     </div>

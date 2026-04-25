@@ -1,11 +1,14 @@
 // src/components/EditInvoiceModal.tsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase } from '../../Types/invoice'
+import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase, Invoice } from '../../Types/invoice'
 import { CalendarIcon, TrashIcon, ArrowLeftIcon, PlusIcon } from '../common/Icons/icons'
+import { useInvoice } from '../../context/InvoiceContext'
+import { formToInvoice, invoiceToForm } from '../../Types/invoice'
 
 interface EditInvoiceModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  invoice: Invoice;   // 🆕 the invoice to edit
 }
 
 const INITIAL_FORM_DATA: InvoiceFormData = {
@@ -30,7 +33,13 @@ const INITIAL_FORM_DATA: InvoiceFormData = {
 
 const PAYMENT_TERMS_OPTIONS = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days'] as const
 
-const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) => {
+const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose, invoice }) => {
+
+
+
+  const { updateInvoice } = useInvoice();
+
+
   const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('entering')
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -38,6 +47,14 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
 
   const modalRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isOpen && invoice) {
+      setFormData(invoiceToForm(invoice));
+      setErrors({});
+      setIsLoading(false);
+    }
+  }, [isOpen, invoice]);
 
   // Animate on open
   useEffect(() => {
@@ -166,27 +183,17 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
   }
 
   const handleSave = () => {
-    const validationErrors = validate()
+    const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      const firstErrorField = Object.keys(validationErrors)[0]
-      const errorEl = modalRef.current?.querySelector<HTMLElement>(`[data-field="${firstErrorField}"]`)
-      if (errorEl && contentRef.current) {
-        errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        setTimeout(() => errorEl.focus(), 300)
-      }
-      return
+      setErrors(validationErrors);
+      // scroll to first error …
+      return;
     }
 
-    setIsLoading(true)
-    // Simulate API call – replace with your own logic
-    setTimeout(() => {
-      setIsLoading(false)
-      console.log('Invoice saved:', formData)
-      console.log('Overall Total:', overallTotal.toFixed(2))
-      handleClose()
-    }, 1500)
-  }
+    const updatedInvoice = formToInvoice(formData, invoice.id, invoice.status);
+    updateInvoice(invoice.id, updatedInvoice);
+    handleClose();
+  };
 
   const getError = (field: string) => errors[field] || null
 
@@ -246,7 +253,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
         {/* Header */}
         <div className="px-6 md:px-8 pt-2 md:pt-8 pb-2 flex-shrink-0">
           <h2 className="text-2xl leading-[22px] tracking-[-0.75px] font-bold font-spartan text-[#0C0E16] dark:text-white">
-            Edit <span className="text-[#7E88C3] dark:text-[#DFE3FA]">#</span>XM9141
+            Edit <span className="text-[#7E88C3] dark:text-[#DFE3FA]">#</span>{invoice.id}
           </h2>
         </div>
 

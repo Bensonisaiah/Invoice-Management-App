@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase } from '../../Types/invoice'
 import { CalendarIcon, TrashIcon, ArrowLeftIcon, PlusIcon } from '../common/Icons/icons'
+import { useInvoice } from '../../context/InvoiceContext'
+import { formToInvoice } from '../../Types/invoice'
 
 interface CreateInvoiceModalProps {
   isOpen: boolean
@@ -28,6 +30,10 @@ const EMPTY_FORM_DATA: InvoiceFormData = {
 const PAYMENT_TERMS_OPTIONS = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days'] as const
 
 const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose }) => {
+
+  const { addInvoice } = useInvoice();
+
+
   const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('entering')
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -166,28 +172,33 @@ const handleDeleteItem = (itemId: string) => {
     return e
   }
 
-  const handleSave = () => {
-    const validationErrors = validate()
+  // ---------- Save as Draft ----------
+  const handleSaveAsDraft = () => {
+    const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      const firstErrorField = Object.keys(validationErrors)[0]
-      const errorEl = modalRef.current?.querySelector<HTMLElement>(`[data-field="${firstErrorField}"]`)
-      if (errorEl && contentRef.current) {
-        errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        setTimeout(() => errorEl.focus(), 300)
-      }
-      return
+      setErrors(validationErrors);
+      // focus first error (existing logic) …
+      return;
     }
 
-    setIsLoading(true)
-    // Replace with your API call to create invoice
-    setTimeout(() => {
-      setIsLoading(false)
-      console.log('New invoice created:', formData)
-      console.log('Overall Total:', overallTotal.toFixed(2))
-      handleClose()
-    }, 1500)
-  }
+    const newInvoice = formToInvoice(formData, crypto.randomUUID(), "draft");
+    addInvoice(newInvoice);
+    handleClose();
+  };
+
+  // ---------- Save & Send (Pending) ----------
+  const handleSaveAndSend = () => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      // focus first error …
+      return;
+    }
+
+    const newInvoice = formToInvoice(formData, crypto.randomUUID(), "pending");
+    addInvoice(newInvoice);
+    handleClose();
+  };
 
   const getError = (field: string) => errors[field] || null
 
@@ -424,9 +435,10 @@ const handleDeleteItem = (itemId: string) => {
           <div className="h-4" />
         </div>
 
-        {/* Footer */}
+        {/* // Footer (replace the existing footer div completely) */}
         <div className="flex-shrink-0 px-6 md:px-8 py-5 border-t border-[#DFE3FA] dark:border-[#252945] bg-white dark:bg-[#1E2139]" style={{ borderRadius: '0 0 20px 0' }}>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Cancel */}
             <button
               onClick={handleClose}
               className="w-full sm:w-auto px-6 py-3.5 rounded-full text-[13px] font-bold tracking-[-0.1px] text-[#7E88C3] dark:text-[#DFE3FA] bg-[#F9FAFE] dark:bg-[#252945] border border-[#DFE3FA] dark:border-[#252945] order-2 sm:order-1 transition-all duration-200 hover:bg-[#DFE3FA] dark:hover:bg-[#373B53] hover:text-[#7C5DFA]"
@@ -434,28 +446,26 @@ const handleDeleteItem = (itemId: string) => {
             >
               Cancel
             </button>
+
             <div className="flex-1 hidden sm:block" />
-            <div className="hidden md:flex items-center gap-3 order-2">
-              <span className="text-[13px] text-[#7E88C3] dark:text-[#DFE3FA]">Total:</span>
-              <span className="text-[20px] font-bold text-[#0C0E16] dark:text-white font-spartan">£ {overallTotal.toFixed(2)}</span>
-            </div>
+
+            {/* Save as Draft */}
             <button
-              onClick={handleSave}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full text-white text-[13px] font-bold tracking-[-0.1px] flex items-center justify-center gap-2 order-1 sm:order-3 transition-all duration-200 hover:bg-[#9277FF] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(124,93,250,0.4)] active:translate-y-0 active:shadow-none"
-              style={{ backgroundColor: isLoading ? '#9277FF' : '#7C5DFA', minWidth: '140px' }}
+              onClick={handleSaveAsDraft}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full text-[13px] font-bold tracking-[-0.1px] text-[#7E88C3] dark:text-[#DFE3FA] bg-[#F9FAFE] dark:bg-[#252945] border border-[#DFE3FA] dark:border-[#252945] order-3 sm:order-2 transition-all duration-200 hover:bg-[#DFE3FA] dark:hover:bg-[#373B53] hover:text-[#7C5DFA]"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <svg className="spinner w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
-                    <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                  Creating...
-                </>
-              ) : (
-                'Save & Send'
-              )}
+              Save as Draft
+            </button>
+
+            {/* Save & Send */}
+            <button
+              onClick={handleSaveAndSend}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full text-white text-[13px] font-bold tracking-[-0.1px] flex items-center justify-center order-1 sm:order-3 transition-all duration-200 hover:bg-[#9277FF] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(124,93,250,0.4)] active:translate-y-0 active:shadow-none"
+              style={{ backgroundColor: '#7C5DFA' }}
+              disabled={isLoading}
+            >
+              Save & Send
             </button>
           </div>
         </div>

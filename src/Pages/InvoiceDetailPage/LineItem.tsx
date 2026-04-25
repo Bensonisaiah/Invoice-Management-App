@@ -4,7 +4,7 @@ interface LineItemProps {
   /** Name/description of the item or service */
   name: string;
   /** Quantity (can be a number or a string) */
-  quantity: number | string;
+  quantity: number;
   /** Unit price (numeric) */
   unitPrice: number;
   /** Currency symbol (default: £) */

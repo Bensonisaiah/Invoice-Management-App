@@ -4,19 +4,29 @@ import InvoiceDetail from "./InvoiceDetail";
 import EditInvoiceModal from "../../component/Modals/EditModal";
 import { useState } from "react";
 import DeleteConfirmationModal from "../../component/Modals/DeleteConfirmationModal";
+import { useParams } from "react-router-dom";
+import { useInvoice } from "../../context/InvoiceContext";
 
 const InvoiceDetailPage = () => {
+
+    const { invoices, deleteInvoice } = useInvoice();
+  const { id } = useParams<{ id: string }>();
+  const invoice = invoices.find(inv => inv.id === id);
+
+  if (!invoice) return <p>Invoice not found.</p>;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-const invoiceId = "XM9141";
 
-const handleDelete = () => {
-  // perform deletion logic
-  setShowDeleteModal(false);
-};
+  const handleDelete = () => {
+    if (invoice) {
+      deleteInvoice(invoice.id);
+      setShowDeleteModal(false);
+      // navigate back to list, e.g., history.push('/')
+    }
+  };
 
   
   return (
@@ -32,7 +42,8 @@ const handleDelete = () => {
         <DetailHeader 
         onEdit={() => setIsModalOpen(true)}
         onDelete={() => setShowDeleteModal(true)} />
-        <InvoiceDetail />       
+
+        <InvoiceDetail invoice={invoice} />       
       </div>
 
     </div>
@@ -41,14 +52,14 @@ const handleDelete = () => {
       isOpen={showDeleteModal}
       onCancel={() => setShowDeleteModal(false)}
       onDelete={handleDelete}
-      invoiceId={invoiceId}
+      invoiceId={invoice?.id ?? ""}
       // Optional overrides:
       // title="Custom Title"
       // message="Your custom message"
     />
 
 
-    {isModalOpen && <EditInvoiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+    {isModalOpen && invoice && <EditInvoiceModal invoice={invoice} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
 
   </>
   );

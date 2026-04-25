@@ -180,9 +180,11 @@ const handleDeleteItem = (itemId: string) => {
       // focus first error (existing logic) …
       return;
     }
+    setIsLoading(true);
     const newId = generateInvoiceId(invoices.map(inv => inv.id));
     const newInvoice = formToInvoice(formData, newId, "draft");
     addInvoice(newInvoice);
+    setIsLoading(false);
     handleClose();
   };
 
@@ -195,9 +197,11 @@ const handleDeleteItem = (itemId: string) => {
       return;
     }
 
+    setIsLoading(true);   
     const newId = generateInvoiceId(invoices.map(inv => inv.id));
     const newInvoice = formToInvoice(formData, newId, "pending");
     addInvoice(newInvoice);
+    setIsLoading(false);
     handleClose();
   };
 

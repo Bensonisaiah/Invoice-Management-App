@@ -3,10 +3,21 @@ import DetailHeader from "./DetailHeader";
 import InvoiceDetail from "./InvoiceDetail";
 import EditInvoiceModal from "../../component/Modals/EditModal";
 import { useState } from "react";
+import DeleteConfirmationModal from "../../component/Modals/DeleteConfirmationModal";
 
 const InvoiceDetailPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+const invoiceId = "XM9141";
+
+const handleDelete = () => {
+  // perform deletion logic
+  setShowDeleteModal(false);
+};
+
   
   return (
     <>
@@ -18,13 +29,25 @@ const InvoiceDetailPage = () => {
           <h3 className="text-text-primary font-bold test-[15px] leading-[15px] tracking-[-0.25px]">Go back</h3>
         </div>
 
-        <DetailHeader onEdit={() => setIsModalOpen(true)} />
+        <DetailHeader 
+        onEdit={() => setIsModalOpen(true)}
+        onDelete={() => setShowDeleteModal(true)} />
         <InvoiceDetail />       
       </div>
 
     </div>
 
-    
+    <DeleteConfirmationModal
+      isOpen={showDeleteModal}
+      onCancel={() => setShowDeleteModal(false)}
+      onDelete={handleDelete}
+      invoiceId={invoiceId}
+      // Optional overrides:
+      // title="Custom Title"
+      // message="Your custom message"
+    />
+
+
     {isModalOpen && <EditInvoiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
 
   </>

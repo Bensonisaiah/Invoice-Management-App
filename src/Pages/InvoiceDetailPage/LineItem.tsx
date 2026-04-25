@@ -27,8 +27,10 @@ const LineItem: React.FC<LineItemProps> = ({
   const totalPrice = unitPrice * qty;
 
   // Format numbers to 2 decimal places with the chosen currency symbol
-  const formatPrice = (value: number) =>
-    `${currency} ${value.toFixed(2)}`;
+  const formatPrice = (value: number | undefined | null) => {
+  if (typeof value !== 'number' || isNaN(value)) return `${currency} 0.00`;
+  return `${currency} ${value.toFixed(2)}`;
+};
 
   return (
     <div

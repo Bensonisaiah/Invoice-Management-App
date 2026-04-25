@@ -8,10 +8,11 @@ import StatusBadge from "../../component/common/StatusBadge";
 interface DetailHeaderProps {
   onEdit: () => void;
   onDelete: () => void;
+  markAsPaid: () => void;
 }
 
 
-const DetailHeader: React.FC<DetailHeaderProps> = ({ onEdit, onDelete }) => {
+const DetailHeader: React.FC<DetailHeaderProps> = ({ onEdit, onDelete, markAsPaid }) => {
   return (
     <div className="flex justify-between px-8 py-6 rounded-lg bg-[var(--card-bg)] shadow-[0px_10px_10px_-10px_#48549F1A]">
       <div className="flex justify-between items-center gap-5">
@@ -22,7 +23,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ onEdit, onDelete }) => {
       <div className="flex gap-4">
         <div onClick={onEdit}><EditBtn /></div>
         <div onClick={onDelete}><DeleteBtn /></div>
-        <MarkAsPaidBtn />
+        <div onClick={markAsPaid}><MarkAsPaidBtn /></div>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import { useInvoice } from "../../context/InvoiceContext";
 
 const InvoiceDetailPage = () => {
 
-    const { invoices, deleteInvoice } = useInvoice();
+    const { invoices, deleteInvoice, markAsPaid } = useInvoice();
   const { id } = useParams<{ id: string }>();
   const invoice = invoices.find(inv => inv.id === id);
 
@@ -41,7 +41,8 @@ const InvoiceDetailPage = () => {
 
         <DetailHeader 
         onEdit={() => setIsModalOpen(true)}
-        onDelete={() => setShowDeleteModal(true)} />
+        onDelete={() => setShowDeleteModal(true)}
+        markAsPaid={() => markAsPaid(invoice.id)} />
 
         <InvoiceDetail invoice={invoice} />       
       </div>

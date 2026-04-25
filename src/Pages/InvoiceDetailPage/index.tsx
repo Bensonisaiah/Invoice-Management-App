@@ -1,9 +1,15 @@
 import { Icon } from "@iconify/react";
 import DetailHeader from "./DetailHeader";
 import InvoiceDetail from "./InvoiceDetail";
+import EditInvoiceModal from "../../component/Modals/EditModal";
+import { useState } from "react";
 
 const InvoiceDetailPage = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   return (
+    <>
     <div className="pt-32 px-10 lg:pt-16 lg:px-56 w-full">
       <div className="flex flex-col w-full gap-6">
 
@@ -12,11 +18,16 @@ const InvoiceDetailPage = () => {
           <h3 className="text-text-primary font-bold test-[15px] leading-[15px] tracking-[-0.25px]">Go back</h3>
         </div>
 
-        <DetailHeader />
+        <DetailHeader onEdit={() => setIsModalOpen(true)} />
         <InvoiceDetail />       
       </div>
 
     </div>
+
+    
+    {isModalOpen && <EditInvoiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+
+  </>
   );
 };
 

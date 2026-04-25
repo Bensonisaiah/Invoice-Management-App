@@ -4,7 +4,13 @@ import MarkAsPaidBtn from "../../component/common/Buttons/MarkAsPaidBtn";
 import StatusBadge from "../../component/common/StatusBadge";
 
 
-const DetailHeader = () => {
+
+interface DetailHeaderProps {
+  onEdit: () => void;
+}
+
+
+const DetailHeader: React.FC<DetailHeaderProps> = ({ onEdit }) => {
   return (
     <div className="flex justify-between px-8 py-6 rounded-lg bg-[var(--card-bg)] shadow-[0px_10px_10px_-10px_#48549F1A]">
       <div className="flex justify-between items-center gap-5">
@@ -13,7 +19,7 @@ const DetailHeader = () => {
       </div>
 
       <div className="flex gap-4">
-        <EditBtn />
+        <div onClick={onEdit}><EditBtn /></div>
         <DeleteBtn />
         <MarkAsPaidBtn />
       </div>

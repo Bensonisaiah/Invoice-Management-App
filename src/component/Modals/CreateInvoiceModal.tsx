@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase } from '../../Types/invoice'
 import { CalendarIcon, TrashIcon, ArrowLeftIcon, PlusIcon } from '../common/Icons/icons'
 import { useInvoice } from '../../context/InvoiceContext'
-import { formToInvoice } from '../../Types/invoice'
+import { formToInvoice, generateInvoiceId } from '../../Types/invoice'
 
 interface CreateInvoiceModalProps {
   isOpen: boolean
@@ -31,7 +31,7 @@ const PAYMENT_TERMS_OPTIONS = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30
 
 const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose }) => {
 
-  const { addInvoice } = useInvoice();
+  const { addInvoice, invoices } = useInvoice();
 
 
   const [animationPhase, setAnimationPhase] = useState<AnimationPhase>('entering')
@@ -127,7 +127,7 @@ const handleItemChange = (itemId: string, field: keyof InvoiceItem, value: strin
 };
 
   const handleAddItem = () => {
-    const newId = crypto.randomUUID(); // unique string ID
+    const newId = generateInvoiceId(invoices.map(inv => inv.id)); // unique string ID
   setFormData(prev => ({
     ...prev,
     items: [...prev.items, { id: newId, name: '', quantity: 0, price: 0, total: 0 }],
@@ -180,8 +180,8 @@ const handleDeleteItem = (itemId: string) => {
       // focus first error (existing logic) …
       return;
     }
-
-    const newInvoice = formToInvoice(formData, crypto.randomUUID(), "draft");
+    const newId = generateInvoiceId(invoices.map(inv => inv.id));
+    const newInvoice = formToInvoice(formData, newId, "draft");
     addInvoice(newInvoice);
     handleClose();
   };
@@ -195,7 +195,8 @@ const handleDeleteItem = (itemId: string) => {
       return;
     }
 
-    const newInvoice = formToInvoice(formData, crypto.randomUUID(), "pending");
+    const newId = generateInvoiceId(invoices.map(inv => inv.id));
+    const newInvoice = formToInvoice(formData, newId, "pending");
     addInvoice(newInvoice);
     handleClose();
   };

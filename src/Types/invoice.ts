@@ -125,3 +125,27 @@ export const invoiceToForm = (invoice: Invoice): InvoiceFormData => ({
 
 export type FormErrors = Record<string, string>;
 export type AnimationPhase = "entering" | "visible" | "exiting";
+
+// src/types/invoice.ts (append at the bottom)
+
+/**
+ * Generates a unique invoice ID in the format "AA0000".
+ * Checks against the provided array of existing IDs to avoid collisions.
+ */
+export const generateInvoiceId = (existingIds: string[]): string => {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const randomId = (): string => {
+    const l1 = letters[Math.floor(Math.random() * 26)];
+    const l2 = letters[Math.floor(Math.random() * 26)];
+    const num = Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0');
+    return `${l1}${l2}${num}`;
+  };
+
+  let newId = randomId();
+  while (existingIds.includes(newId)) {
+    newId = randomId();
+  }
+  return newId;
+};

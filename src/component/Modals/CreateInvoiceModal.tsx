@@ -103,41 +103,40 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
     if (errors[field]) setErrors(prev => { const n = { ...prev }; delete n[field]; return n })
   }
 
-  const handleItemChange = (itemId: number, field: keyof InvoiceItem, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      items: prev.items.map(item => {
-        if (item.id !== itemId) return item
-        const updated = { ...item, [field]: value }
-        if (field === 'qty' || field === 'price') {
-          const qty = field === 'qty' ? parseFloat(value) || 0 : parseFloat(String(item.qty)) || 0
-          const price = field === 'price' ? parseFloat(value) || 0 : parseFloat(String(item.price)) || 0
-          updated.total = Math.round(qty * price * 100) / 100
-        }
-        return updated
-      }),
-    }))
-  }
+const handleItemChange = (itemId: string, field: keyof InvoiceItem, value: string) => {
+  setFormData(prev => ({
+    ...prev,
+    items: prev.items.map(item => {
+      if (item.id !== itemId) return item;
+      const updated = { ...item, [field]: value };
+      // Recalculate total when quantity or price changes
+      if (field === 'quantity' || field === 'price') {
+        const qty = field === 'quantity' ? parseFloat(value) || 0 : updated.quantity;
+        const price = field === 'price' ? parseFloat(value) || 0 : updated.price;
+        updated.total = Math.round(qty * price * 100) / 100;
+      }
+      return updated;
+    }),
+  }));
+};
 
   const handleAddItem = () => {
-    const newId = formData.items.length > 0
-      ? Math.max(...formData.items.map(i => i.id)) + 1
-      : 1
-    setFormData(prev => ({
-      ...prev,
-      items: [...prev.items, { id: newId, name: '', qty: 0, price: 0, total: 0 }],
-    }))
+    const newId = crypto.randomUUID(); // unique string ID
+  setFormData(prev => ({
+    ...prev,
+    items: [...prev.items, { id: newId, name: '', quantity: 0, price: 0, total: 0 }],
+  }));
     setTimeout(() => {
       if (contentRef.current) contentRef.current.scrollTop = contentRef.current.scrollHeight
     }, 100)
   }
 
-  const handleDeleteItem = (itemId: number) => {
-    setFormData(prev => ({
-      ...prev,
-      items: prev.items.filter(item => item.id !== itemId),
-    }))
-  }
+const handleDeleteItem = (itemId: string) => {
+  setFormData(prev => ({
+    ...prev,
+    items: prev.items.filter(item => item.id !== itemId),
+  }));
+};
 
   const overallTotal = useMemo(
     () => formData.items.reduce((sum, item) => sum + (item.total || 0), 0),
@@ -161,7 +160,7 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
     if (formData.items.length === 0) e.items = 'Add at least one item'
     formData.items.forEach(item => {
       if (!item.name?.trim()) e[`itemName_${item.id}`] = 'Required'
-      if (!item.qty || item.qty <= 0) e[`itemQty_${item.id}`] = 'Required'
+      if (!item.quantity || item.quantity <= 0) e[`itemQty_${item.id}`] = 'Required';
       if (!item.price || item.price <= 0) e[`itemPrice_${item.id}`] = 'Required'
     })
     return e
@@ -367,7 +366,14 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
                     </div>
                     <div>
                       <span className="md:hidden text-[11px] text-[#7E88C3] dark:text-[#DFE3FA] font-medium block mb-1">Qty.</span>
-                      <input type="number" value={item.qty || ''} onChange={e => handleItemChange(item.id, 'qty', e.target.value)} className={`${inputClass(`itemQty_${item.id}`)} text-center`} data-field={`itemQty_${item.id}`} disabled={isLoading} placeholder="0" min="0" step="1" />
+                      <input
+                       type="number" 
+                       value={item.quantity || ''}
+                       onChange={e => handleItemChange(item.id, 'quantity', e.target.value)} 
+                       className={`${inputClass(`itemQty_${item.id}`)} text-center`} 
+                       data-field={`itemQty_${item.id}`} 
+                       disabled={isLoading} 
+                       placeholder="0" min="0" step="1" />
                       <FieldError error={getError(`itemQty_${item.id}`)} />
                     </div>
                     <div>
@@ -378,7 +384,7 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
                     <div>
                       <span className="md:hidden text-[11px] text-[#7E88C3] dark:text-[#DFE3FA] font-medium block mb-1">Total</span>
                       <div className="w-full px-4 py-3.5 rounded-md text-[13px] font-bold tracking-[-0.1px] text-[#7E88C3] dark:text-[#DFE3FA] text-center bg-transparent">
-                        £ {item.total.toFixed(2)}
+                        £ {(item.total ?? 0).toFixed(2)}
                       </div>
                     </div>
                     <div className="flex md:justify-center pt-1 md:pt-0">

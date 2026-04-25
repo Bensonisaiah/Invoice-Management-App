@@ -23,9 +23,9 @@ const INITIAL_FORM_DATA: InvoiceFormData = {
   paymentTerms: 'Net 30 Days',
   projectDescription: 'Graphic Design',
   items: [
-    { id: 1, name: 'Banner Design', qty: 1, price: 156.0, total: 156.0 },
-    { id: 2, name: 'Email Design', qty: 2, price: 200.0, total: 400.0 },
-  ],
+    { id: crypto.randomUUID(), name: 'Banner Design', quantity: 1, price: 156.0, total: 156.0 },
+    { id: crypto.randomUUID(), name: 'Email Design', quantity: 2, price: 200.0, total: 400.0 },
+  ]
 }
 
 const PAYMENT_TERMS_OPTIONS = ['Net 1 Day', 'Net 7 Days', 'Net 14 Days', 'Net 30 Days'] as const
@@ -106,29 +106,38 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
     if (errors[field]) setErrors(prev => { const n = { ...prev }; delete n[field]; return n })
   }
 
-  const handleItemChange = (itemId: number, field: keyof InvoiceItem, value: string) => {
+  const handleItemChange = (itemId: string, field: keyof InvoiceItem, value: string) => {
     setFormData(prev => ({
       ...prev,
       items: prev.items.map(item => {
-        if (item.id !== itemId) return item
-        const updated = { ...item, [field]: value }
-        if (field === 'qty' || field === 'price') {
-          const qty = field === 'qty' ? parseFloat(value) || 0 : parseFloat(String(item.qty)) || 0
-          const price = field === 'price' ? parseFloat(value) || 0 : parseFloat(String(item.price)) || 0
-          updated.total = Math.round(qty * price * 100) / 100
+        if (item.id !== itemId) return item;
+        const updated = { ...item, [field]: value };
+        // Recalculate total when quantity or price changes
+        if (field === 'quantity' || field === 'price') {
+          const qty = field === 'quantity' ? parseFloat(value) || 0 : updated.quantity;
+          const price = field === 'price' ? parseFloat(value) || 0 : updated.price;
+          updated.total = Math.round(qty * price * 100) / 100;
         }
-        return updated
+        return updated;
       }),
-    }))
-  }
+    }));
+  };
 
   const handleAddItem = () => {
-    const newId = Math.max(0, ...formData.items.map(i => i.id)) + 1
-    setFormData(prev => ({ ...prev, items: [...prev.items, { id: newId, name: '', qty: 0, price: 0, total: 0 }] }))
-    setTimeout(() => { if (contentRef.current) contentRef.current.scrollTop = contentRef.current.scrollHeight }, 100)
-  }
+    const newId = crypto.randomUUID();
+    setFormData(prev => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        { id: newId, name: '', quantity: 0, price: 0, total: 0 }
+      ],
+    }));
+    setTimeout(() => {
+      if (contentRef.current) contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }, 100);
+  };
 
-  const handleDeleteItem = (itemId: number) => {
+  const handleDeleteItem = (itemId: string) => {
     setFormData(prev => ({ ...prev, items: prev.items.filter(item => item.id !== itemId) }))
   }
 
@@ -150,7 +159,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
     if (!formData.projectDescription?.trim()) e.projectDescription = 'Required'
     formData.items.forEach(item => {
       if (!item.name?.trim()) e[`itemName_${item.id}`] = 'Required'
-      if (!item.qty || item.qty <= 0) e[`itemQty_${item.id}`] = 'Required'
+      if (!item.quantity || item.quantity <= 0) e[`itemQty_${item.id}`] = 'Required'
       if (!item.price || item.price <= 0) e[`itemPrice_${item.id}`] = 'Required'
     })
     return e
@@ -356,7 +365,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
                     </div>
                     <div>
                       <span className="md:hidden text-[11px] text-[#7E88C3] dark:text-[#DFE3FA] font-medium block mb-1">Qty.</span>
-                      <input type="number" value={item.qty || ''} onChange={e => handleItemChange(item.id, 'qty', e.target.value)} className={`${inputClass(`itemQty_${item.id}`)} text-center`} data-field={`itemQty_${item.id}`} disabled={isLoading} placeholder="0" min="0" step="1" />
+                      <input type="number" value={item.quantity || ''} onChange={e => handleItemChange(item.id, 'quantity', e.target.value)} className={`${inputClass(`itemQty_${item.id}`)} text-center`} data-field={`itemQty_${item.id}`} disabled={isLoading} placeholder="0" min="0" step="1" />
                       <FieldError error={getError(`itemQty_${item.id}`)} />
                     </div>
                     <div>
@@ -367,7 +376,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose }) 
                     <div>
                       <span className="md:hidden text-[11px] text-[#7E88C3] dark:text-[#DFE3FA] font-medium block mb-1">Total</span>
                       <div className="w-full px-4 py-3.5 rounded-md text-[13px] font-bold tracking-[-0.1px] text-[#7E88C3] dark:text-[#DFE3FA] text-center bg-transparent">
-                        £ {item.total.toFixed(2)}
+                        £ {(item.total ?? 0).toFixed(2)}
                       </div>
                     </div>
                     <div className="flex md:justify-center pt-1 md:pt-0">

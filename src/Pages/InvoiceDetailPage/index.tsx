@@ -11,16 +11,19 @@ const InvoiceDetailPage = () => {
 
   const navigate = useNavigate();
 
-    const { invoices, deleteInvoice, markAsPaid } = useInvoice();
+  const { invoices, deleteInvoice, markAsPaid } = useInvoice();
   const { id } = useParams<{ id: string }>();
-  const invoice = invoices.find(inv => inv.id === id);
-
-  if (!invoice) return <p>Invoice not found.</p>;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const invoice = invoices.find(inv => inv.id === id);
+
+  if (!invoice) return <p>Invoice not found.</p>;
+
+
 
   const handleDelete = () => {
     if (invoice) {

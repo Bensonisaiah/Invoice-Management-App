@@ -103,6 +103,17 @@ export const formToInvoice = (
 };
 
 // ========== Helper: Invoice → Form (for editing) ==========
+
+// At the top of the file or inside invoiceToForm:
+const parseFormattedDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return ''; // fallback if parsing fails
+  return date.toISOString().split('T')[0]; // "yyyy-MM-dd"
+};
+
+
+
+
 export const invoiceToForm = (invoice: Invoice): InvoiceFormData => ({
   billFromStreet: invoice.senderAddress.street,
   billFromCity: invoice.senderAddress.city,
@@ -114,7 +125,7 @@ export const invoiceToForm = (invoice: Invoice): InvoiceFormData => ({
   billToCity: invoice.clientAddress.city,
   billToPostCode: invoice.clientAddress.postCode,
   billToCountry: invoice.clientAddress.country,
-  invoiceDate: invoice.createdAt, // you might need to convert back to YYYY-MM-DD for input
+  invoiceDate: parseFormattedDate(invoice.createdAt),
   paymentTerms: "Net 30 Days",    // store as you like, or parse from due date diff
   projectDescription: invoice.description,
   items: invoice.items.map((item) => ({

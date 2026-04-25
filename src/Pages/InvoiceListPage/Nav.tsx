@@ -4,9 +4,11 @@ import NewInvoiceBtn from "../../component/common/Buttons/NewInvoiceBtn";
 
 interface NavProps {
   onNewInvoice: () => void;
+  value: () => void;
+  onChange: () => void;
 }
 
-const Nav: React.FC<NavProps> = ({ onNewInvoice }) => {
+const Nav: React.FC<NavProps> = ({ onNewInvoice, onChange, value }) => {
   return (
     <div className="flex items-center justify-between mb-8 w-full">
       <div>
@@ -17,7 +19,7 @@ const Nav: React.FC<NavProps> = ({ onNewInvoice }) => {
 
       <div className="flex items-center justify-center gap-4">
         <div>
-          <FilterByStatus />
+          <FilterByStatus value={value} onChange={onChange} />
         </div>
 
         <div onClick={onNewInvoice}><NewInvoiceBtn /></div>

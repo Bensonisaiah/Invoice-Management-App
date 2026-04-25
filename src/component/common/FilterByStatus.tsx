@@ -17,19 +17,24 @@ const STATUS_OPTIONS: StatusOption[] = [
   { label: 'Paid',    value: 'paid' },
 ];
 
+interface FilterByStatusProps {
+  value: string | null;               // current selected value or null
+  onChange: (value: string | null) => void; // fires when selection changes
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-const FilterByStatus: React.FC = () => {
+const FilterByStatus: React.FC<FilterByStatusProps> = ({ value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  // const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   // ---- Helpers -----------------------------------------------------------
-  const selectedOption = STATUS_OPTIONS.find(opt => opt.value === selectedValue) ?? null;
+  const selectedOption = STATUS_OPTIONS.find(opt => opt.value === value) ?? null;
   const buttonLabel = selectedOption ? selectedOption.label : 'Filter by status';
 
   const updateActiveDescendant = useCallback(() => {
@@ -51,9 +56,10 @@ const FilterByStatus: React.FC = () => {
   const close = () => setIsOpen(false);
 
   const selectOption = (option: StatusOption) => {
-    // If the same option is clicked again, deselect it (optional)
-    setSelectedValue(prev => (prev === option.value ? null : option.value));
-    close(); // Optionally close the dropdown on selection
+    // If clicking the already selected option, reset to null (all)
+    const newValue = value === option.value ? null : option.value;
+    onChange(newValue);
+    setIsOpen(false);
   };
 
   // ---- Keyboard navigation ------------------------------------------------
@@ -146,7 +152,7 @@ const FilterByStatus: React.FC = () => {
         >
           <ul ref={listRef} className="py-1" role="none">
             {STATUS_OPTIONS.map((option, index) => {
-              const isSelected = selectedValue === option.value;
+              const isSelected = value === option.value;
               const isActive = index === activeIndex;
               return (
                 <li

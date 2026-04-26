@@ -1,17 +1,10 @@
 // src/context/InvoiceContext.tsx
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import type { Invoice } from "../Types/invoice";
 import { getInvoices, saveInvoices } from "./getInvoices";
+import { InvoiceContext } from "./InvoiceContext";
 
-interface InvoiceContextType {
-  invoices: Invoice[];
-  addInvoice: (invoice: Invoice) => void;
-  updateInvoice: (id: string, updated: Invoice) => void;
-  deleteInvoice: (id: string) => void;
-  markAsPaid: (id: string) => void;
-}
 
-const InvoiceContext = createContext<InvoiceContextType | undefined>(undefined);
 
 export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [invoices, setInvoices] = useState<Invoice[]>(() => getInvoices());

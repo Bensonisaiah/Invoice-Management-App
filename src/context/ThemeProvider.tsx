@@ -1,13 +1,14 @@
-import { createContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { ThemeContext, type Theme } from './ThemeContext';
 
-type Theme = 'light' | 'dark';
+// type Theme = 'light' | 'dark';
 
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
+// interface ThemeContextType {
+//   theme: Theme;
+//   toggleTheme: () => void;
+// }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+// const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const getInitialTheme = (): Theme => {
   const stored = localStorage.getItem('theme') as Theme | null;

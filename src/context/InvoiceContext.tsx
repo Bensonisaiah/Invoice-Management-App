@@ -1,5 +1,5 @@
 // src/context/InvoiceContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import type { Invoice } from "../Types/invoice";
 import { getInvoices, saveInvoices } from "./getInvoices";
 
@@ -44,10 +44,4 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       {children}
     </InvoiceContext.Provider>
   );
-};
-
-export const useInvoice = () => {
-  const context = useContext(InvoiceContext);
-  if (!context) throw new Error("useInvoice must be used within InvoiceProvider");
-  return context;
 };

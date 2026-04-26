@@ -2,8 +2,8 @@ import { useState } from "react";
 import InvoiceList from "./InvoiceList";
 import Nav from "./Nav";
 import CreateInvoiceModal from "../../component/Modals/CreateInvoiceModal";
-import { useInvoice } from "../../context/InvoiceContext";
 import type { InvoiceStatus } from "../../Types/invoice";
+import { useInvoice } from "../../context/InvoiceContext";
 
 
 const InvoiceListPage = () => {

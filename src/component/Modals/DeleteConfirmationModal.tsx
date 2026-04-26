@@ -38,11 +38,11 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
         aria-labelledby="delete-modal-title"
         aria-describedby="delete-modal-description"
       >
-        <div className="rounded-2xl bg-[var(--card-bg)] p-8 shadow-modal">
+        <div className="rounded-lg bg-[var(--card-bg)] px-12 py-[51px] shadow-[0px_10px_10px_-10px_#48549F1A]">
           {/* Title */}
           <h2
             id="delete-modal-title"
-            className="text-2xl font-bold tracking-[-0.75px] text-[rgb(var(--text-primary))]"
+            className="text-2xl font-bold tracking-[-0.5px] leading-8 text-[rgb(var(--text-primary))]"
           >
             {title}
           </h2>
@@ -50,7 +50,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           {/* Description */}
           <p
             id="delete-modal-description"
-            className="mt-3 text-[13px] leading-[18px] tracking-[-0.1px] text-[rgb(var(--text-secondary))]"
+            className="mt-3 font-medium text-[13px] leading-[22px] tracking-[-0.1px] text-[rgb(var(--text-secondary))]"
           >
             {message}
           </p>

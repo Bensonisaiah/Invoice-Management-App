@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase } from '../../Types/invoice'
 import { CalendarIcon, TrashIcon, ArrowLeftIcon, PlusIcon } from '../common/Icons/icons'
-import { useInvoice } from '../../context/InvoiceContext'
 import { formToInvoice, generateInvoiceId } from '../../Types/invoice'
+import { useInvoice } from '../../context/InvoiceContext'
 
 interface CreateInvoiceModalProps {
   isOpen: boolean
@@ -43,15 +43,35 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
   const contentRef = useRef<HTMLDivElement>(null)
 
   // Animation on open
+  const enterRaf = useRef<number>(0)
+  const visibleRaf = useRef<number>(0)
+
   useEffect(() => {
     if (isOpen) {
-      setAnimationPhase('entering')
-      const timer = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setAnimationPhase('visible'))
+      enterRaf.current = requestAnimationFrame(() => {
+        setAnimationPhase('entering')
+        visibleRaf.current = requestAnimationFrame(() => {
+          requestAnimationFrame(() => setAnimationPhase('visible'))
+        })
       })
-      return () => cancelAnimationFrame(timer)
+      return () => {
+        cancelAnimationFrame(enterRaf.current)
+        cancelAnimationFrame(visibleRaf.current)
+      }
     }
   }, [isOpen])
+
+  const handleClose = useCallback(() => {
+    if (isLoading) return
+    setAnimationPhase('exiting')
+    setTimeout(() => onClose(), 300)
+  }, [onClose, isLoading])
+
+  // Keep handleClose in a ref so the keyboard effect can always call the latest version
+  const handleCloseRef = useRef(handleClose)
+  useEffect(() => {
+    handleCloseRef.current = handleClose
+  })
 
   // Focus trap + keyboard
   useEffect(() => {
@@ -62,7 +82,7 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        handleClose()
+        handleCloseRef.current()
         return
       }
       if (e.key === 'Tab' && modalRef.current) {
@@ -94,11 +114,7 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
     }
   }, [animationPhase])
 
-  const handleClose = useCallback(() => {
-    if (isLoading) return
-    setAnimationPhase('exiting')
-    setTimeout(() => onClose(), 300)
-  }, [onClose, isLoading])
+
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && !isLoading) handleClose()

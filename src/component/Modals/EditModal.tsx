@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { InvoiceFormData, InvoiceItem, FormErrors, AnimationPhase, Invoice } from '../../Types/invoice'
 import { CalendarIcon, TrashIcon, ArrowLeftIcon, PlusIcon } from '../common/Icons/icons'
-import { useInvoice } from '../../context/InvoiceContext'
 import { formToInvoice, invoiceToForm } from '../../Types/invoice'
+import { useInvoice } from '../../context/InvoiceContext';
 
 interface EditInvoiceModalProps {
   isOpen: boolean;
@@ -50,22 +50,42 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose, in
 
   useEffect(() => {
     if (isOpen && invoice) {
-      setFormData(invoiceToForm(invoice));
-      setErrors({});
-      setIsLoading(false);
+      queueMicrotask(() => {
+        setFormData(invoiceToForm(invoice));
+        setErrors({});
+        setIsLoading(false);
+      });
     }
   }, [isOpen, invoice]);
 
-  // Animate on open
+  const enterRaf = useRef<number>(0)
+  const visibleRaf = useRef<number>(0)
+
   useEffect(() => {
     if (isOpen) {
-      setAnimationPhase('entering')
-      const timer = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setAnimationPhase('visible'))
+      enterRaf.current = requestAnimationFrame(() => {
+        setAnimationPhase('entering')
+        visibleRaf.current = requestAnimationFrame(() => {
+          requestAnimationFrame(() => setAnimationPhase('visible'))
+        })
       })
-      return () => cancelAnimationFrame(timer)
+      return () => {
+        cancelAnimationFrame(enterRaf.current)
+        cancelAnimationFrame(visibleRaf.current)
+      }
     }
   }, [isOpen])
+
+  const handleClose = useCallback(() => {
+    if (isLoading) return
+    setAnimationPhase('exiting')
+    setTimeout(() => onClose(), 300)
+  }, [onClose, isLoading])
+
+  const handleCloseRef = useRef(handleClose)
+  useEffect(() => {
+    handleCloseRef.current = handleClose
+  })
 
   // Focus trap + keyboard
   useEffect(() => {
@@ -76,7 +96,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose, in
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        handleClose()
+        handleCloseRef.current()
         return
       }
       if (e.key === 'Tab' && modalRef.current) {
@@ -108,11 +128,7 @@ const EditInvoiceModal: React.FC<EditInvoiceModalProps> = ({ isOpen, onClose, in
     }
   }, [animationPhase])
 
-  const handleClose = useCallback(() => {
-    if (isLoading) return
-    setAnimationPhase('exiting')
-    setTimeout(() => onClose(), 300)
-  }, [onClose, isLoading])
+
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && !isLoading) handleClose()
